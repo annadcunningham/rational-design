@@ -28,13 +28,13 @@ Coming soon... planning to get everything set up in a Vagrant VM.
     - TODO: Also calculate and show secondary structure?
 5. The report includes:
     - Summary Page
-        Table of peptides
-            Homology score
-            Peptide sequence
-            Peptide position
-            Peptide conservation)
+        - Table of peptides
+            - Homology score
+            - Peptide sequence
+            - Peptide position
+            - Peptide conservation
     - Peptide pages
-            Alignment of each peptide
-            Heatmap
-            Structural location?
-            Table of protein descriptions
+            - Alignment of each peptide
+            - Heatmap
+            - Structural location?
+            - Table of protein descriptions
