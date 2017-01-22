@@ -9,13 +9,14 @@ from Bio.Blast.Applications import NcbiblastxCommandline, NcbiblastpCommandline
 from basebio import join_subdir, ndiff
 
 Entrez.email = 'annadcunningham@gmail.com'
+ncbi_dbpath = 'ncbi-proteomes/'
 
 
 def blast_protein_local(fastafile, dbname='human', evalue=0.001, subdir='TEMP'):
     """ BLASTs the protein sequence in the fastafile using local database.
         Writes a .xml file containing the BLAST results.
     """
-    dbpath = 'ncbi-proteomes/' + dbname
+    dbpath = ncbi_dbpath + dbname
     outfile = '{}_{}.xml'.format(fastafile.split('.fasta')[0], dbname)
     outfile = join_subdir(outfile, subdir)
     if not os.path.isfile(outfile):
@@ -28,7 +29,7 @@ def blast_peptide_local(peptideseq, dbname='human', evalue=1000, subdir='TEMP'):
     """ BLASTs the peptide sequence (input as string) using local database.
         Writes a .xml file containing the BLAST results.
     """
-    dbpath = '../ncbi-proteomes/' + dbname
+    dbpath = ncbi_dbpath + dbname
     infile = '{}.fasta'.format(peptideseq)
     infile = join_subdir(infile, subdir)
     with open(infile, 'w') as F:

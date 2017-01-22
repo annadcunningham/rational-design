@@ -1,2 +1,8 @@
 *.pyc
+*.phr
+*.pin
+*.pog
+*.psd
+*.psi
+*.psq
 design/TEMP/*
