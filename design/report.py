@@ -96,11 +96,12 @@ def build_report(protein1_name, protein2_name,
         Story.append(PageBreak())
 
         # Add the list of proteins / protein names
-        table_ = [['Accession ID', 'Protein description']]
+        table_ = [['Accession ID', 'Homologous sequence', 'Protein description']]
         for (protein_name_dict, ordered_keys) in dict_of_heatmap_protein_names[n]:
             for accession in ordered_keys:
                 if accession.upper() not in [protein1_name.upper(), protein2_name.upper()]:
-                    table_.append([accession, ', '.join(protein_name_dict[accession])])
+                    [peptide_seq, descriptions] = protein_name_dict[accession]
+                    table_.append([accession, peptide_seq, ', '.join(descriptions)])
         Story.append(Table(make_table_header_bold(make_table_wrap(table_)), hAlign='LEFT'))
 
         doc.addPageTemplates(
