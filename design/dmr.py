@@ -85,6 +85,31 @@ def find_homologous_peptides(fasta1, fasta2, peptide_length, use_mean=False,
         top_homologous_pairs = filter_homologous_pairs_by_conservation(top_homologous_pairs, use_mean=use_mean)
     return top_homologous_pairs
 
+def concatenate_homologous_peptides(list_of_top_homologous_pairs_lists):
+    """ Reduce multiple lists of homologous peptide pairs down to a single list
+        with little repetition.
+        When making a list of top homologous peptide pairs, longer peptides tend
+        to have lower homology scores. This is why I opted to get a list of top
+        homologous pairs of each length, then join them (rather than filtering
+        all lengths by the top stdev together).
+    """
+    homologous_pairs_concat = []
+    for top_homologous_pairs in list_of_top_homologous_pairs_lists:
+        for pair1 in top_homologous_pairs:
+            add_peptide = True
+            for pair2 in homologous_pairs_concat:
+                # check if the sequence is already included
+                if pair1.seq1 in pair2.seq1:
+                    pair2.similar_pairs.append((pair1.seq1, pair1.seq2))
+                    add_peptide = False
+                # if there is major overlap between this and a previous one
+                elif pair1.seq1[1:] in pair2.seq1 or pair1.seq1[:-1] in pair2.seq1:
+                    pair2.similar_pairs.append((pair1.seq1, pair1.seq2))
+                    add_peptide = False
+            if add_peptide:
+                homologous_pairs_concat.append(pair1)
+    return homologous_pairs_concat
+
 def calculate_conservation_for_heatmap(fastafile, peptideseq, gap_penalty=-6, matrix=MatrixInfo.blosum80):
     """ Makes a MSA of the given protein in the fastafile, prunes it to the
         peptide seq, then calculates conservation of the peptide in each
@@ -149,6 +174,5 @@ def make_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
     NOTES:
     - make a map showing the position? possibly with a predicted secondary structure?
     - user input for how many peptides to show
-    - user inputs a range of peptide lengths (5-10)
     - sort the heatmap first by human sequence?
     """
