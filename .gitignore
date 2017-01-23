@@ -6,3 +6,4 @@
 *.psi
 *.psq
 design/TEMP/*
+.vagrant/
