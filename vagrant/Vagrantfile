@@ -23,7 +23,6 @@ Vagrant.configure("2") do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  #config.vm.synced_folder "../ncbi-proteomes", "/ncbi-database"
   config.vm.synced_folder "../design", "/design"
 
   # Provider-specific configuration so you can fine-tune various
@@ -44,9 +43,10 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y clustalw ncbi-blast+
-    apt-get build-dep -y python-matplotlib
-    apt-get install -y python3-pip python-reportlab ipython3
-    pip3 install seaborn biopython pandas
+    apt-get build-dep -y python-matplotlib python-imaging
+    apt-get install -y libblas-dev liblapack-dev libatlas-base-dev gfortran # Need these for scipy
+    apt-get install -y python3-pip ipython3
+    pip3 install scipy biopython pandas matplotlib seaborn pillow reportlab
     # Install the NCBI Blast database
     chmod +x /design/ncbi-proteomes/database_setup.sh
     cd /design/ncbi-proteomes/ && ./database_setup.sh
