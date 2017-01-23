@@ -116,7 +116,6 @@ def make_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
     accession_list, peptide_list = get_homologous_blast_subjects(fname, peptide.peptideseq)
     print('Assembling heatmap for homologous peptides in {} proteins'.format(len(accession_list)))
     fastas = write_protein_fastas_from_accession_numbers(accession_list, peptide_list, accessions_to_skip)
-    #fastas += [peptide.protein.fasta]
 
     dictdict = {}
     protein_name_dict = {}
@@ -130,9 +129,8 @@ def make_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
         fname = fasta.split('/')[-1].split('.fasta')[0]
         accession_label, peptide_seq = fname.split('_')
         scores_dict = calculate_conservation_for_heatmap(fasta, peptide_seq)
-        # label = fasta.split('/')[-1].split('.fasta')[0]
         dictdict[accession_label] = scores_dict
-        protein_name_dict[accession_label] = get_full_protein_name(fasta)
+        protein_name_dict[accession_label] = [peptide_seq, get_full_protein_name(fasta)]
 
     heatmap_df = pd.DataFrame(dictdict)
     heatmap_df_sorted = heatmap_df.ix[['human'] + organisms, :]
@@ -148,51 +146,9 @@ def make_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
 
 #if __name__ == '__main__':
     """
-    Rational Design
-    1. Get a list of all possible peptide alignments with homology scores
-        - TODO: Try a few different amino acid lengths (5-10), specified by user
-        - Keep only peptide pairs with homology score greater than or equal to
-          2 stdev above the mean
-    2. For each homologous peptide pair:
-        - Calculate the conservation of each peptide across the list of organisms
-        - Filter out the ones that are poorly conserved?
-            This is currently not done, but can be done by changing
-            filter_by_cons=True in design.py
-    3. For each homologous peptide pair:
-        - Blast to get other proteins that contain that peptide
-            (exclude putative and fragment proteins)
-            TODO: Allow peptides that are not exactly the same, for long peptides
-        - Calculate the conservation of that peptide in that protein across
-            the list of organisms
-        - Make a heatmap showing the 10 proteins with the most conserved
-            homologous peptide
-    4. TODO: Find where the peptides are on the protein (linear map)
-        - TODO: Show this summary on the first page of the report
-        - TODO: Show it on each individual peptide page
-        - TODO: Also calculate and show secondary structure?
-    5. The report includes:
-        - Summary Page
-            Table of peptides
-                Homology score
-                Peptide sequence
-                Peptide position
-                Peptide conservation)
-        - Peptide pages
-                Alignment of each peptide
-                Heatmap
-                Structural location?
-                Table of protein descriptions
-
     NOTES:
-    - for heatmap: with long peptides, the heatmap is often just the input protein.
-        loosen the homology constraint to get more proteins with, say, 80% homologous peptides.
-    X also for heatmap: get rid of proteins with "putative" or "fragment" in them
-    X when the heatmap is 100s of proteins (so many that you can't read the accession),
-        just show the most conserved 10 or so
-    X in the summary table (first page), say the amino acid position of the peptides
     - make a map showing the position? possibly with a predicted secondary structure?
     - user input for how many peptides to show
     - user inputs a range of peptide lengths (5-10)
-    - add peptide sequence to table of proteins with homologous peptides
     - sort the heatmap first by human sequence?
     """

@@ -73,10 +73,7 @@ def get_homologous_blast_subjects(filename, peptideseq):
         # this is a hacky way to get the match sequence (n.match) :/
         for n in alignment.hsps:
             pass
-        if len(n.match) == len(peptideseq): # and n.identities > 0.4*len(peptideseq) + 2.5:
-
-
-        #if ndiff(n.match, peptideseq) < len(peptideseq)*0.6 - 1.5: # this allows a certain number of mismatches
+        if (len(n.match) == len(peptideseq)) and ('-' not in n.sbjct):
             alignment_list.append(alignment)
             peptide_list.append(n.sbjct)
     return [a.accession for a in alignment_list], peptide_list
@@ -103,14 +100,17 @@ def write_protein_fastas_from_accession_numbers(accession_list, peptide_list, ac
         if accessions_to_skip is not None:
             if accession in accessions_to_skip:
                 continue
-        handle = try_Entrez_efetch(accession)
-        try:
-            fasta = handle.read()
-        except:
-            fasta = ''
-        if fasta != '':
-            filename = join_subdir('{}_{}.fasta'.format(accession, peptide), subdir)
-            with open(filename, 'w') as F:
-                F.write(fasta)
-            accessions_with_proteins.append(filename)
+        fasta_filename = join_subdir('{}_{}.fasta'.format(accession, peptide), subdir)
+        if not os.path.isfile(fasta_filename):
+            handle = try_Entrez_efetch(accession)
+            try:
+                fasta = handle.read()
+            except:
+                fasta = ''
+            if fasta != '':
+                with open(fasta_filename, 'w') as F:
+                    F.write(fasta)
+        if os.path.isfile(fasta_filename):
+            print('Entrez {} fetched'.format(accession))
+            accessions_with_proteins.append(fasta_filename)
     return accessions_with_proteins
