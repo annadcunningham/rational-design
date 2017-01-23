@@ -31,7 +31,6 @@ $ python3 design.py -p1 PDK -p2 DPKC -l 5 -o pdk_dpkc_report.pdf test/pdk.fasta 
 3. For each homologous peptide pair:
     - Blast to get other proteins that contain that peptide
         (exclude putative and fragment proteins)
-        TODO: Allow peptides that are not exactly the same, for long peptides
     - Calculate the conservation of that peptide in that protein across
         the list of organisms
     - Make a heatmap showing the 10 proteins with the most conserved
