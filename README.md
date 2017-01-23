@@ -34,7 +34,7 @@ Coming soon... planning to get everything set up in a Vagrant VM.
             - Peptide position
             - Peptide conservation
     - Peptide pages
-            - Alignment of each peptide
-            - Heatmap
-            - Structural location?
-            - Table of protein descriptions
+        - Alignment of each peptide
+        - Heatmap
+        - Structural location?
+        - Table of protein descriptions
