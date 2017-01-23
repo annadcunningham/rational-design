@@ -102,7 +102,11 @@ def build_report(protein1_name, protein2_name,
                 if accession.upper() not in [protein1_name.upper(), protein2_name.upper()]:
                     [peptide_seq, descriptions] = protein_name_dict[accession]
                     table_.append([accession, peptide_seq, ', '.join(descriptions)])
-        Story.append(Table(make_table_header_bold(make_table_wrap(table_)), hAlign='LEFT'))
+        Story.append(Table(
+                        make_table_header_bold(make_table_wrap(table_)),
+                        hAlign='LEFT',
+                        colWidths=[1.2*inch, 1.8*inch, 4.3*inch]
+                        ))
 
         doc.addPageTemplates(
                 [PageTemplate(
