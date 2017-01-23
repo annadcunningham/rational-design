@@ -58,14 +58,18 @@ This program is meant to be run in a virtual machine (VM) with all the
 prerequisites already installed. This allows anyone on any operating system to
 run the program without complicated and OS-specific installation issues.
 To start the VM, you will need Vagrant and VirtualBox.
+
 1. Download and install Vagrant here: https://www.vagrantup.com/downloads.html
+
 2. Download and install VirtualBox here: https://www.virtualbox.org/wiki/Downloads
+
 3. Clone this repository and initialize the VM:
 ```
 $ cd rational-design/vagrant
 $ vagrant up
 ```
 Initializing the VM may take a while (10-20 minutes).
+
 4. Enter the VM and navigate to the `design` directory:
 ```
 $ vagrant ssh
