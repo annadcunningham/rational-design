@@ -103,14 +103,17 @@ def write_protein_fastas_from_accession_numbers(accession_list, peptide_list, ac
         if accessions_to_skip is not None:
             if accession in accessions_to_skip:
                 continue
-        handle = try_Entrez_efetch(accession)
-        try:
-            fasta = handle.read()
-        except:
-            fasta = ''
-        if fasta != '':
-            filename = join_subdir('{}_{}.fasta'.format(accession, peptide), subdir)
-            with open(filename, 'w') as F:
-                F.write(fasta)
-            accessions_with_proteins.append(filename)
+        fasta_filename = join_subdir('{}_{}.fasta'.format(accession, peptide), subdir)
+        if not os.path.isfile(fasta_filename):
+            handle = try_Entrez_efetch(accession)
+            try:
+                fasta = handle.read()
+            except:
+                fasta = ''
+            if fasta != '':
+                with open(fasta_filename, 'w') as F:
+                    F.write(fasta)
+        if os.path.isfile(fasta_filename):
+            print(' Entrez {} fetched'.format(fasta_filename))
+            accessions_with_proteins.append(fasta_filename)
     return accessions_with_proteins
