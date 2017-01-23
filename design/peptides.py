@@ -78,7 +78,9 @@ class Peptide():
         except:
             print('Could not find seq {} in {}'.format(self.peptideseq, str(humanseq.seq)))
         # crop the alignment
-        cropped_MSA = aln_trimmed.alignment[:, start:end]
+        extended_start = start-1 if start != 0 else start
+        extended_end = end+1
+        cropped_MSA = aln_trimmed.alignment[:, extended_start:extended_end]
         return MultipleSequenceAlignment(cropped_MSA)
 
     def get_conservation_score(self):
@@ -101,6 +103,7 @@ class HomologousPeptidePair():
         self.seq1 = PairwiseAlignment.pep1.peptideseq
         self.seq2 = PairwiseAlignment.pep2.peptideseq
         self.homology_score = PairwiseAlignment.score
+        self.similar_pairs = []
 
     def get_organisms_with_both_proteins(self):
         """ Returns a list of organisms that are present in both protein MSAs.
