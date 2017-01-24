@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 from basebio import join_subdir
-from dmr import find_homologous_peptides, make_heatmap
+from dmr import find_homologous_peptides, concatenate_homologous_peptides, make_heatmap
 from report import build_report
 
 
@@ -25,10 +25,9 @@ def argument_parser():
                         help='Name of protein 2.')
 
     # PEPTIDE INPUTS
-    ### TODO: make a default for this
-    ### TODO: allow user to input range of lengths (ex. 5-8)
-    parser.add_argument('-l', '--peptidelength', type=int,
-                        required=True, help='Length of desired peptide.')
+    parser.add_argument('-l', '--peptidelength', type=str,
+                        required=True, help=('Length of desired peptide. Input a'
+                        'single integer (i.e. 6) or a range (i.e. 5-10).'))
 
     # OUTPUT SPECIFICATIONS
     parser.add_argument('-o', '--out', type=FileType('w'), required=False,
@@ -42,12 +41,26 @@ def argument_parser():
 if __name__ == '__main__':
     args = argument_parser()
 
+    # Parse the peptide_length argument
+    if '-' in args.peptidelength:
+        length1, length2 = [int(n) for n in args.peptidelength.split('-')]
+        peptide_lengths = range(length2, length1-1, -1)
+    else:
+        peptide_lengths = [int(args.peptidelength)]
+
     # Generate a list of homologous peptide pair candidates
-    top_homologous_pairs = find_homologous_peptides(args.fasta1.name,
-                                                    args.fasta2.name,
-                                                    args.peptidelength,
-                                                    filter_by_cons=False)
-    print('{} candidate peptides identified'.format(len(top_homologous_pairs)))
+    list_of_top_homologous_pairs_lists = []
+    for peptide_length in peptide_lengths:
+        top_homologous_pairs = find_homologous_peptides(args.fasta1.name,
+                                                        args.fasta2.name,
+                                                        peptide_length,
+                                                        filter_by_cons=False)
+        list_of_top_homologous_pairs_lists.append(top_homologous_pairs)
+        print('{} peptides of length {}'.format(len(top_homologous_pairs), peptide_length))
+
+    homologous_pairs_concat = concatenate_homologous_peptides(list_of_top_homologous_pairs_lists)
+
+    print('{} candidate peptides identified'.format(len(homologous_pairs_concat)))
 
     top_homologous_pairs = top_homologous_pairs[:2]
 
@@ -68,8 +81,6 @@ if __name__ == '__main__':
         fig = plt.figure()
         ax1 = fig.add_subplot(1,2,1)
         protein_names_1 = make_heatmap(pair.peptide1, accessions_to_skip=accessions_to_skip, axis=ax1)
-        # protein_names_2 = {}
-        # if pair.seq1 != pair.seq2:
         ax2 = fig.add_subplot(1,2,2)
         protein_names_2 = make_heatmap(pair.peptide2, accessions_to_skip=accessions_to_skip, axis=ax2)
         print('Saving heatmap image {}.png'.format(n))
