@@ -20,9 +20,10 @@ $ python3 design.py -p1 PDK -p2 DPKC -l 5 -o pdk_dpkc_report.pdf test/pdk.fasta 
 
 ## General Workflow
 1. Get a list of all possible peptide alignments with homology scores
-    - TODO: Try a few different amino acid lengths (5-10), specified by user
+    - Try a few different amino acid lengths (ex. 5-10), specified by user
     - Keep only peptide pairs with homology score greater than or equal to
       2 stdev above the mean
+    - Combine overlapping peptides into one entry
 2. For each homologous peptide pair:
     - Calculate the conservation of each peptide across the list of organisms
     - Filter out the ones that are poorly conserved?
@@ -39,6 +40,7 @@ $ python3 design.py -p1 PDK -p2 DPKC -l 5 -o pdk_dpkc_report.pdf test/pdk.fasta 
     - TODO: Show this summary on the first page of the report
     - TODO: Show it on each individual peptide page
     - TODO: Also calculate and show secondary structure?
+    - TODO: Show a .pdb structure if available?
 5. The report includes:
     - Summary Page
         - Table of peptides
@@ -49,7 +51,7 @@ $ python3 design.py -p1 PDK -p2 DPKC -l 5 -o pdk_dpkc_report.pdf test/pdk.fasta 
     - Peptide pages
         - Alignment of each peptide
         - Heatmap
-        - Structural location?
+        - TODO: Structural location
         - Table of protein descriptions
 
 ## Installation
