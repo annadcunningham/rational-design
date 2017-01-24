@@ -25,10 +25,9 @@ def argument_parser():
                         help='Name of protein 2.')
 
     # PEPTIDE INPUTS
-    ### TODO: make a default for this
-    ### TODO: allow user to input range of lengths (ex. 5-8)
     parser.add_argument('-l', '--peptidelength', type=str,
-                        required=True, help='Length of desired peptide.')
+                        required=True, help=('Length of desired peptide. Input a'
+                        'single integer (i.e. 6) or a range (i.e. 5-10).'))
 
     # OUTPUT SPECIFICATIONS
     parser.add_argument('-o', '--out', type=FileType('w'), required=False,
@@ -42,7 +41,7 @@ def argument_parser():
 if __name__ == '__main__':
     args = argument_parser()
 
-    # parse the peptide_length argument
+    # Parse the peptide_length argument
     if '-' in args.peptidelength:
         length1, length2 = [int(n) for n in args.peptidelength.split('-')]
         peptide_lengths = range(length2, length1-1, -1)
@@ -63,12 +62,10 @@ if __name__ == '__main__':
 
     print('{} candidate peptides identified'.format(len(homologous_pairs_concat)))
 
-    #top_homologous_pairs
-    #top_homologous_pairs = top_homologous_pairs[:2]
+    top_homologous_pairs = top_homologous_pairs[:2]
 
     # Try to get the accession numbers for the proteins so they don't repeat
     # in the heatmap
-    """
     try:
         accession1 = top_homologous_pairs[0].peptide1.name.split('-')[1]
         accession2 = top_homologous_pairs[0].peptide2.name.split('-')[1]
@@ -98,4 +95,3 @@ if __name__ == '__main__':
                  protein_names_for_report,
                  out=args.out.name,
                  subdir=args.temp)
-    """
