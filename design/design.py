@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
-from basebio import join_subdir
+from basebio import join_subdir, organisms
 from dmr import find_homologous_peptides, concatenate_homologous_peptides, make_heatmap
 from report import build_report
 
@@ -26,8 +26,8 @@ def argument_parser():
 
     # PEPTIDE INPUTS
     parser.add_argument('-l', '--peptidelength', type=str,
-                        required=True, help=('Length of desired peptide. Input a'
-                        'single integer (i.e. 6) or a range (i.e. 5-10).'))
+                        required=True, help=('Length of desired peptide. Input '
+                        'a single integer (i.e. 6) or a range (i.e. 5-10).'))
 
     # OUTPUT SPECIFICATIONS
     parser.add_argument('-o', '--out', type=FileType('w'), required=False,
@@ -93,5 +93,6 @@ if __name__ == '__main__':
     build_report(protein1_name, protein2_name,
                  top_homologous_pairs,
                  protein_names_for_report,
+                 ['human'] + organisms,
                  out=args.out.name,
                  subdir=args.temp)

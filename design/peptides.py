@@ -122,13 +122,13 @@ class HomologousPeptidePair():
     @property
     def peptide1_MSA(self):
         """ Gets the peptide1 MSA with no gaps in the human sequence. """
-        peptide1_MSA = self.peptide1.get_peptide_MSA(organism_list=self.shared_organisms)
+        peptide1_MSA = self.peptide1.get_peptide_MSA(trim_by_gaps=False)
         return peptide1_MSA.remove_gaps_from_human()
 
     @property
     def peptide2_MSA(self):
         """ Gets the peptide2 MSA with no gaps in the human sequence. """
-        peptide2_MSA = self.peptide2.get_peptide_MSA(organism_list=self.shared_organisms)
+        peptide2_MSA = self.peptide2.get_peptide_MSA(trim_by_gaps=False)
         return peptide2_MSA.remove_gaps_from_human()
 
     @property
