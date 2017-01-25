@@ -9,7 +9,8 @@ from peptides import Peptide, Protein, HomologousPeptidePair
 from basebio import join_subdir
 
 styles = getSampleStyleSheet()
-styles.add(ParagraphStyle(name='Align', fontName='Courier'))
+styles.add(ParagraphStyle(name='Align', fontName='Courier', fontSize=10))
+marginsize = 0.6*inch
 
 def format_table(table, rows=[0], bold=True, style='Normal'):
     for row in rows:
@@ -74,10 +75,10 @@ def position_strings(position, peptide_length):
 def build_report(protein1_name, protein2_name,
                  list_of_HomologousPeptidePairs,
                  dict_of_heatmap_protein_names,
+                 list_of_organisms,
                  out='test_report.pdf',
                  subdir='TEMP'):
 
-    marginsize = 0.6*inch
     doc = SimpleDocTemplate(out, pagesize=letter,
                         rightMargin=marginsize, leftMargin=marginsize,
                         topMargin=marginsize, bottomMargin=marginsize)
@@ -144,15 +145,26 @@ def build_report(protein1_name, protein2_name,
         Story.append(PageBreak())
 
         # Add the two alignments
+        Story.append(Spacer(1, 17))
+        for organism in list_of_organisms:
+            Story.append(Paragraph('<b>{}</b>'.format(organism), styles['Align']))
         Story.append(FrameBreak())
 
         alignment_len = max(pair.peptide1_MSA.num_seq, pair.peptide2_MSA.num_seq)
         for protein_name, alignment_ in zip([protein1_name, protein2_name],
-                [str(pair.peptide1_MSA.alignment), str(pair.peptide2_MSA.alignment)]):
+                [pair.peptide1_MSA, pair.peptide2_MSA]):
             Story.append(Paragraph('<u>{}</u>'.format(protein_name), styles['Align']))
             Story.append(Spacer(1, 5))
-            for line in alignment_.split('\n')[1:]:
-                Story.append(Paragraph(line, styles['Align']))
+            sorted_indices = alignment_.get_sorted_indices(list_of_organisms)
+            for si in sorted_indices:
+                if si == -1:
+                    Story.append(Spacer(1, 10))
+                else:
+                    line = alignment_.alignment[si]
+                    line_id = '|'.join(line.id.split('|')[1:])
+                    if len(line_id) > 35 - len(line.seq):
+                        line_id = line_id[:35-len(line.seq)]
+                    Story.append(Paragraph('{} {}'.format(line.seq, line_id), styles['Align']))
             Story.append(FrameBreak())
 
         # Add the heatmap
@@ -182,11 +194,11 @@ def build_report(protein1_name, protein2_name,
         doc.addPageTemplates(
                 [PageTemplate(
                     id='PeptidePage',
-                    frames=build_frames(doc, similar_pairs_len, image_height)
+                    frames=build_frames_peptidepage(doc, similar_pairs_len)
                     ),
                  PageTemplate(
                     id='HeatmapPage',
-                    frames=build_frames(doc, alignment_len, image_height)
+                    frames=build_frames_heatmappage(doc, alignment_len)
                     ),
                  PageTemplate(
                     id='TablePage',
@@ -198,25 +210,53 @@ def build_report(protein1_name, protein2_name,
     doc.build(Story)
 
 
-def build_frames(doc, alignment_len, image_height):
-    alignframeheight = 12*(alignment_len+2) + 12
+def build_frames_peptidepage(doc, peptides_height):
+    frame_height = 12*(peptides_height+2) + 12
     title_frame = Frame(doc.leftMargin, doc.height, doc.width, 1.1*inch)
-    align_frame_1 = Frame(
+    peptide_frame_1 = Frame(
                         doc.leftMargin,
-                        doc.height - alignframeheight,
+                        doc.height - frame_height,
                         doc.width/2,
-                        alignframeheight
+                        frame_height
+                        )
+    peptide_frame_2 = Frame(
+                        doc.leftMargin + doc.width/2,
+                        doc.height - frame_height,
+                        doc.width/2,
+                        frame_height
+                        )
+    structure_frame = Frame(
+                        doc.leftMargin,
+                        doc.bottomMargin,
+                        doc.width,
+                        doc.height - frame_height - 1.1*inch
+                        )
+    return [title_frame, peptide_frame_1, peptide_frame_2, structure_frame]
+
+def build_frames_heatmappage(doc, alignment_height):
+    frame_height = 12*(alignment_height+4) + 12
+    align_frame_0 = Frame(
+                        doc.leftMargin,
+                        doc.height - frame_height + marginsize,
+                        1*inch,
+                        frame_height
+                        )
+    align_frame_1 = Frame(
+                        doc.leftMargin + 1*inch,
+                        doc.height - frame_height + marginsize,
+                        (doc.width-1*inch)/2,
+                        frame_height
                         )
     align_frame_2 = Frame(
-                        doc.leftMargin + doc.width/2,
-                        doc.height - alignframeheight,
-                        doc.width/2,
-                        alignframeheight
+                        doc.leftMargin + 1*inch + (doc.width-1*inch)/2,
+                        doc.height - frame_height + marginsize,
+                        (doc.width-1*inch)/2,
+                        frame_height
                         )
     heatmap_frame = Frame(
                         doc.leftMargin,
                         doc.bottomMargin,
                         doc.width,
-                        6*inch
+                        doc.height - frame_height
                         )
-    return [title_frame, align_frame_1, align_frame_2, heatmap_frame]
+    return [align_frame_0, align_frame_1, align_frame_2, heatmap_frame]
