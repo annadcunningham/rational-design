@@ -169,7 +169,7 @@ def build_report(protein1_name, protein2_name,
 
         # Add the heatmap
         image_ = Image(join_subdir('{}.png'.format(n), subdir))
-        _, image_height = image_._restrictSize(6 * inch, 6 * inch)
+        _, image_height = image_._restrictSize(7.5 * inch, 7.5 * inch)
         Story.append(image_)
 
         Story.append(NextPageTemplate('TablePage'))

@@ -161,7 +161,7 @@ def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
     heatmap_df = pd.DataFrame(dictdict)
     return (heatmap_df, protein_name_dict)
 
-def plot_heatmap(df1, df2, figname, tempdir, num2show=35):
+def plot_heatmap(df1, df2, figname, tempdir, num2show=30):
     df3 = pd.concat([df1, df2], axis=1)
     # weed out repeats
     accessions = df3.columns.values.tolist()
@@ -180,7 +180,7 @@ def plot_heatmap(df1, df2, figname, tempdir, num2show=35):
     df3_sorted[df3_sorted < 0] = 0
     df3_sorted = df3_sorted.ix[:, :num2show]
     # make the figure
-    fig = plt.figure()
+    fig = plt.figure(figsize=(11,5))
     ax1 = fig.add_subplot(1,1,1)
     sns.heatmap(df3_sorted, vmin=0, vmax=max(df3.max()), ax=ax1)
     plt.yticks(rotation=0)
