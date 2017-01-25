@@ -177,14 +177,14 @@ def build_report(protein1_name, protein2_name,
 
         # Add the list of proteins / protein names
         table_ = [['Accession ID', 'Homologous sequence', 'Protein description']]
-        for (protein_name_dict, ordered_keys) in dict_of_heatmap_protein_names[n]:
-            for accession in ordered_keys:
-                if accession.upper() not in [protein1_name.upper(), protein2_name.upper()]:
-                    [peptide_seq, descriptions] = protein_name_dict[accession]
-                    table_.append([accession,
-                                   Paragraph(peptide_seq, styles['Align']),
-                                   Paragraph(', '.join(descriptions), styles['Normal'])
-                                   ])
+        (protein_name_dict, ordered_keys) = dict_of_heatmap_protein_names[n]
+        for accession in ordered_keys:
+            if accession.upper() not in [protein1_name.upper(), protein2_name.upper()]:
+                [peptide_seq, descriptions] = protein_name_dict[accession]
+                table_.append([accession,
+                               Paragraph(peptide_seq, styles['Align']),
+                               Paragraph(', '.join(descriptions), styles['Normal'])
+                               ])
         Story.append(Table(
                         format_table(table_),
                         hAlign='LEFT',
