@@ -7,7 +7,7 @@ from itertools import combinations
 from Bio.Align.Applications import ClustalwCommandline
 from Bio.SubsMat import MatrixInfo
 
-from basebio import organism_dict, PairwiseAlignment, PeptideBase, ProteinBase
+from basebio import organism_dict, organism_dict2, PairwiseAlignment, PeptideBase, ProteinBase
 
 
 class MultipleSequenceAlignment():
@@ -79,6 +79,23 @@ class MultipleSequenceAlignment():
             aln = aln[:, 0:start] + aln[:, stop:]
             humanseq = str(get_human_seq_from_alignment(aln).seq)
         return MultipleSequenceAlignment(aln)
+
+    def get_sorted_indices(self, organism_list):
+        """ Gets the indices of the alignments for each organism in organism_list.
+        """
+        alignment_id_list = [seqrecord.id for seqrecord in self.alignment]
+        sorted_indices = []
+        for organism in organism_list:
+            organism_found = False
+            for n in range(len(alignment_id_list)):
+                if alignment_id_list[n].split('_')[-1] == organism_dict[organism]:
+                    sorted_indices.append(n)
+                    organism_found = True
+                    break
+            if not organism_found:
+                sorted_indices.append(-1)
+        return sorted_indices
+
 
 ### Functions relating to MSAs ###
 def calc_matrix_score(aa1, aa2, matrix=MatrixInfo.blosum80):
