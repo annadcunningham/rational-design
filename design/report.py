@@ -151,8 +151,12 @@ def build_report(protein1_name, protein2_name,
         Story.append(FrameBreak())
 
         alignment_len = max(pair.peptide1_MSA.num_seq, pair.peptide2_MSA.num_seq)
-        for protein_name, alignment_ in zip([protein1_name, protein2_name],
-                [pair.peptide1_MSA, pair.peptide2_MSA]):
+        alignment_names_dict_list = []
+        for protein_name, alignment_, protein_homologs in zip(
+                [protein1_name, protein2_name],
+                [pair.peptide1_MSA, pair.peptide2_MSA],
+                [pair.protein1.get_protein_homologs(), pair.protein2.get_protein_homologs()]
+                ):
             Story.append(Paragraph('<u>{}</u>'.format(protein_name), styles['Align']))
             Story.append(Spacer(1, 5))
             sorted_indices = alignment_.get_sorted_indices(list_of_organisms)
@@ -162,14 +166,17 @@ def build_report(protein1_name, protein2_name,
                 else:
                     line = alignment_.alignment[si]
                     line_id = '|'.join(line.id.split('|')[1:])
-                    if len(line_id) > 35 - len(line.seq):
-                        line_id = line_id[:35-len(line.seq)]
+                    if line_id != '':
+                        for alignment_name, description in protein_homologs.items():
+                            if line_id in alignment_name:
+                                alignment_names_dict_list.append((line_id.split('|')[0], description))
+                        if len(line_id) > 35 - len(line.seq):
+                            line_id = line_id[:35-len(line.seq)]
                     Story.append(Paragraph('{} {}'.format(line.seq, line_id), styles['Align']))
             Story.append(FrameBreak())
-
         # Add the heatmap
         image_ = Image(join_subdir('{}.png'.format(n), subdir))
-        _, image_height = image_._restrictSize(6 * inch, 6 * inch)
+        _, image_height = image_._restrictSize(7.5 * inch, 7.5 * inch)
         Story.append(image_)
 
         Story.append(NextPageTemplate('TablePage'))
@@ -177,14 +184,16 @@ def build_report(protein1_name, protein2_name,
 
         # Add the list of proteins / protein names
         table_ = [['Accession ID', 'Homologous sequence', 'Protein description']]
-        for (protein_name_dict, ordered_keys) in dict_of_heatmap_protein_names[n]:
-            for accession in ordered_keys:
-                if accession.upper() not in [protein1_name.upper(), protein2_name.upper()]:
-                    [peptide_seq, descriptions] = protein_name_dict[accession]
-                    table_.append([accession,
-                                   Paragraph(peptide_seq, styles['Align']),
-                                   Paragraph(', '.join(descriptions), styles['Normal'])
-                                   ])
+        for accession, description in alignment_names_dict_list:
+            table_.append([accession, '   ', Paragraph(description, styles['Normal'])])
+        (protein_name_dict, ordered_keys) = dict_of_heatmap_protein_names[n]
+        for accession in ordered_keys:
+            if accession.upper() not in [protein1_name.upper(), protein2_name.upper()]:
+                [peptide_seq, descriptions] = protein_name_dict[accession]
+                table_.append([accession,
+                               Paragraph(peptide_seq, styles['Align']),
+                               Paragraph(', '.join(descriptions), styles['Normal'])
+                               ])
         Story.append(Table(
                         format_table(table_),
                         hAlign='LEFT',

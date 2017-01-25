@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 from basebio import join_subdir, organisms
-from dmr import find_homologous_peptides, concatenate_homologous_peptides, make_heatmap
+from dmr import find_homologous_peptides, concatenate_homologous_peptides, calculate_heatmap, plot_heatmap
 from report import build_report
 
 
@@ -78,14 +78,11 @@ if __name__ == '__main__':
     for n in range(len(top_homologous_pairs)):
         pair = top_homologous_pairs[n]
         print('Generating heatmap for peptide {}'.format(n+1))
-        fig = plt.figure()
-        ax1 = fig.add_subplot(1,2,1)
-        protein_names_1 = make_heatmap(pair.peptide1, accessions_to_skip=accessions_to_skip, axis=ax1)
-        ax2 = fig.add_subplot(1,2,2)
-        protein_names_2 = make_heatmap(pair.peptide2, accessions_to_skip=accessions_to_skip, axis=ax2)
-        print('Saving heatmap image {}.png'.format(n))
-        plt.savefig(join_subdir('{}.png'.format(n), args.temp))
-        protein_names_for_report[n] = (protein_names_1, protein_names_2)
+        df1, protein_names_1 = calculate_heatmap(pair.peptide1)
+        df2, protein_names_2 = calculate_heatmap(pair.peptide2)
+        heatmap_df, ordered_keys = plot_heatmap(df1, df2, n, args.temp)
+        protein_names_1.update(protein_names_2)
+        protein_names_for_report[n] = (protein_names_1, ordered_keys)
 
     # Generate the report
     protein1_name = args.protein1 if args.protein1 else args.fasta1.name

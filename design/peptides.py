@@ -15,6 +15,7 @@ class Protein():
         self.proteinseq = ProteinBase.proteinseq
         self.fasta = ProteinBase.fasta
         self.proteinlength = len(self.proteinseq)
+        self.protein_homologs = {}
 
     def write_blast_fasta(self, subdir='TEMP'):
         """ Blasts the protein sequence against organisms in the database and
@@ -26,9 +27,12 @@ class Protein():
             with open(fastafile, 'w') as F:
                 F.write('>HUMAN\n{}\n'.format(self.proteinseq))
                 for organism in organisms:
-                    hit_name, hit_seq = get_top_blast_subject(
-                                            blast_protein_local(
-                                                self.fasta, dbname=organism))
+                    try:
+                        hit_name, hit_seq = get_top_blast_subject(
+                                                blast_protein_local(
+                                                    self.fasta, dbname=organism))
+                    except:
+                        hit_name, hit_seq = None, None
                     if (hit_name is not None) and (hit_seq is not None):
                         F.write('>{}\n{}\n'.format(hit_name, hit_seq))
         return fastafile
@@ -49,6 +53,22 @@ class Protein():
         if organism_list:
             aln = aln.trim_by_organism(organism_list)
         return aln
+
+    def get_protein_homologs(self, subdir='TEMP'):
+        """ Uses the blast fasta to get a dictionary of protein names in the
+            fasta and their descriptions.
+        """
+        fastafile = '{}_blast.fasta'.format(self.name)
+        fastafile = join_subdir(fastafile, subdir)
+        if not os.path.isfile(fastafile):
+            self.write_blast_fasta()
+        with open(fastafile) as F:
+            for line in F:
+                if line.startswith('>'):
+                    name = line[1:]
+                    description = name.split('OS=')[0].split('|')[-1]
+                    self.protein_homologs[name] = description
+        return self.protein_homologs
 
 
 class Peptide():

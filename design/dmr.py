@@ -133,15 +133,16 @@ def calculate_conservation_for_heatmap(fastafile, peptideseq, gap_penalty=-6, ma
         scores_dict[organism] = score
     return scores_dict
 
-def make_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
-    """ Makes a heatmap of conservation of the peptide in the given list of
+def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
+    """ Calculates a heatmap of conservation of the peptide in the given list of
         proteins. Peptide is a peptide object.
+        Returns a dataframe of conservation scores and a dictionary of protein
+        accessions and their descriptions.
     """
     fname = blast_peptide_local(peptide.peptideseq)
     accession_list, peptide_list = get_homologous_blast_subjects(fname, peptide.peptideseq)
-    print('Assembling heatmap for homologous peptides in {} proteins'.format(len(accession_list)))
+    print('Fetching {} proteins with homologous peptides'.format(len(accession_list)))
     fastas = write_protein_fastas_from_accession_numbers(accession_list, peptide_list, accessions_to_skip)
-
     dictdict = {}
     protein_name_dict = {}
     # calculate for protein of interest
@@ -149,6 +150,7 @@ def make_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
     scores_dict = calculate_conservation_for_heatmap(peptide.protein.fasta, peptide.peptideseq)
     dictdict[accession_label] = scores_dict
     # calculate for other homologous proteins
+    print('Assembling heatmap for homologous peptides in {} proteins'.format(len(fastas)))
     for fasta in fastas:
         print('Calculating conservation for {}'.format(fasta))
         fname = fasta.split('/')[-1].split('.fasta')[0]
@@ -156,17 +158,36 @@ def make_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
         scores_dict = calculate_conservation_for_heatmap(fasta, peptide_seq)
         dictdict[accession_label] = scores_dict
         protein_name_dict[accession_label] = [peptide_seq, get_full_protein_name(fasta)]
-
     heatmap_df = pd.DataFrame(dictdict)
-    heatmap_df_sorted = heatmap_df.ix[['human'] + organisms, :]
-    heatmap_df_sorted = heatmap_df_sorted.reindex_axis(heatmap_df_sorted.mean().sort_values(ascending=False).index, axis=1)
-    heatmap_df_sorted[heatmap_df_sorted < 0] = 0
-    heatmap_df_sorted = heatmap_df_sorted.ix[:, :num2show]
-    sns.heatmap(heatmap_df_sorted, vmin=0, vmax=max(heatmap_df.max()), ax=axis)
+    return (heatmap_df, protein_name_dict)
+
+def plot_heatmap(df1, df2, figname, tempdir, num2show=30):
+    df3 = pd.concat([df1, df2], axis=1)
+    # weed out repeats
+    accessions = df3.columns.values.tolist()
+    double_accessions = []
+    for accession in accessions:
+        if (accessions.count(accession) > 1) and (accession not in double_accessions):
+            df3['{}_'.format(accession)] = df3[accession].max(axis=1)
+            double_accessions.append(accession)
+    for accession in double_accessions:
+        df3.pop(accession)
+    # rename the columns
+    df3.columns = [col.replace('_', '') for col in df3.columns.values.tolist()]
+    # sort
+    df3_sorted = df3.ix[['human'] + organisms, :]
+    df3_sorted = df3_sorted.reindex_axis(df3_sorted.mean().sort_values(ascending=False).index, axis=1)
+    df3_sorted[df3_sorted < 0] = 0
+    df3_sorted = df3_sorted.ix[:, :num2show]
+    # make the figure
+    fig = plt.figure(figsize=(11,5))
+    ax1 = fig.add_subplot(1,1,1)
+    sns.heatmap(df3_sorted, vmin=0, vmax=max(df3.max()), ax=ax1)
     plt.yticks(rotation=0)
     plt.xticks(rotation=45, ha='right')
-    axis.set_title('{} {}'.format(peptide.name, peptide.peptideseq))
-    return (protein_name_dict, heatmap_df_sorted.columns.values[:num2show])
+    print('Saving heatmap image {}.png'.format(figname))
+    plt.savefig(join_subdir('{}.png'.format(figname), tempdir))
+    return df3_sorted, df3_sorted.columns.values.tolist()[:num2show]
 
 
 #if __name__ == '__main__':
