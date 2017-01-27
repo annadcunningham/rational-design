@@ -243,7 +243,7 @@ def build_report(protein1_name, protein2_name,
 
 
 def build_frames_peptidepage(doc, peptides_height):
-    frame_height = 14*(peptides_height+6) + 12
+    frame_height = 16*(peptides_height+6) + 12
     title_frame = Frame(doc.leftMargin, doc.height, doc.width, 1.1*inch)
     peptide_frame_1 = Frame(
                         doc.leftMargin,
@@ -259,27 +259,27 @@ def build_frames_peptidepage(doc, peptides_height):
                         )
     structure_frame_1 = Frame(
                         doc.leftMargin,
-                        doc.bottomMargin + 2.5*inch,
+                        doc.bottomMargin + 2.3*inch,
                         doc.width/2,
-                        2.5*inch
+                        2.3*inch
                         )
     structure_frame_2 = Frame(
                         doc.leftMargin + doc.width/2,
-                        doc.bottomMargin + 2.5*inch,
+                        doc.bottomMargin + 2.3*inch,
                         doc.width/2,
-                        2.5*inch
+                        2.3*inch
                         )
     structure_frame_3 = Frame(
                         doc.leftMargin,
                         doc.bottomMargin,
                         doc.width/2,
-                        2.5*inch
+                        2.3*inch
                         )
     structure_frame_4 = Frame(
                         doc.leftMargin + doc.width/2,
                         doc.bottomMargin,
                         doc.width/2,
-                        2.5*inch
+                        2.3*inch
                         )
     return [title_frame, peptide_frame_1, peptide_frame_2,
             structure_frame_1, structure_frame_2, structure_frame_3, structure_frame_4]
