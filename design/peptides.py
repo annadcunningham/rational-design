@@ -47,7 +47,7 @@ class Protein():
         try:
             aln = AlignIO.read(alnfile, 'clustal')
         except: # if alnfile is empty (only the human sequence)
-            record = SeqRecord.SeqRecord(Seq.Seq(self.proteinseq), description='HUMAN')
+            record = SeqRecord.SeqRecord(Seq.Seq(self.proteinseq), description='HUMAN', id='HUMAN')
             aln = Align.MultipleSeqAlignment([record])
         aln = MultipleSequenceAlignment(aln)
         if organism_list:
@@ -101,7 +101,7 @@ class Peptide():
         extended_start = start-1 if start != 0 else start
         extended_end = end+1
         cropped_MSA = aln_trimmed.alignment[:, extended_start:extended_end]
-        return MultipleSequenceAlignment(cropped_MSA)
+        return MultipleSequenceAlignment(cropped_MSA).remove_gaps_from_human()
 
     def get_conservation_score(self):
         """ Gets the MSA score from the cropped peptide MSA. """
