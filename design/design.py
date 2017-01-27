@@ -28,6 +28,11 @@ def argument_parser():
     parser.add_argument('-l', '--peptidelength', type=str,
                         required=True, help=('Length of desired peptide. Input '
                         'a single integer (i.e. 6) or a range (i.e. 5-10).'))
+    # STRUCTURE INPUTS
+    parser.add_argument('-pdb1', type=str, required=False, default=None,
+                        help='PDB ID of protein 1.')
+    parser.add_argument('-pdb2', type=str, required=False, default=None,
+                        help='PDB ID of protein 2.')
 
     # OUTPUT SPECIFICATIONS
     parser.add_argument('-o', '--out', type=FileType('w'), required=False,
@@ -58,9 +63,12 @@ if __name__ == '__main__':
         list_of_top_homologous_pairs_lists.append(top_homologous_pairs)
         print('{} peptides of length {}'.format(len(top_homologous_pairs), peptide_length))
 
-    homologous_pairs_concat = concatenate_homologous_peptides(list_of_top_homologous_pairs_lists)
+    top_homologous_pairs = concatenate_homologous_peptides(list_of_top_homologous_pairs_lists)
 
-    print('{} candidate peptides identified'.format(len(homologous_pairs_concat)))
+    print('{} candidate peptides identified'.format(len(top_homologous_pairs)))
+
+    for pair in top_homologous_pairs:
+        print('{}\t{}\t{}'.format(round(pair.homology_score, 2), pair.seq1, pair.seq2))
 
     top_homologous_pairs = top_homologous_pairs[:2]
 
@@ -91,5 +99,6 @@ if __name__ == '__main__':
                  top_homologous_pairs,
                  protein_names_for_report,
                  ['human'] + organisms,
+                 PDB1=args.pdb1, PDB2=args.pdb2,
                  out=args.out.name,
                  subdir=args.temp)

@@ -6,10 +6,11 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 
 from peptides import Peptide, Protein, HomologousPeptidePair
+from pdb import make_structure_map
 from basebio import join_subdir
 
 styles = getSampleStyleSheet()
-styles.add(ParagraphStyle(name='Align', fontName='Courier', fontSize=10))
+styles.add(ParagraphStyle(name='Align', fontName='Courier', fontSize=8))
 marginsize = 0.6*inch
 
 def format_table(table, rows=[0], bold=True, style='Normal'):
@@ -76,6 +77,8 @@ def build_report(protein1_name, protein2_name,
                  list_of_HomologousPeptidePairs,
                  dict_of_heatmap_protein_names,
                  list_of_organisms,
+                 PDB1=None,
+                 PDB2=None,
                  out='test_report.pdf',
                  subdir='TEMP'):
 
@@ -137,9 +140,29 @@ def build_report(protein1_name, protein2_name,
                 Story.append(Paragraph(aligned_pep, styles['Align']))
             Story.append(FrameBreak())
 
+        # Add structure information
+        Story.append(Paragraph('Secondary structure and rASA', styles['Heading3']))
+        if PDB1 is not None:
+            Story.append(Paragraph('<u>{}</u>'.format(protein1_name), styles['Align']))
+            Story.append(Spacer(1, 5))
+            filename = join_subdir('{}_{}.png'.format(PDB1, n), subdir)
+            pdb_seq1 = make_structure_map(pair.seq1, pair.peptide1.position, PDB1, filename)
+            Story.append(Paragraph('Peptide seq: {}'.format(pair.seq1), styles['Align']))
+            Story.append(Paragraph('PDB str seq: {}'.format(pdb_seq1), styles['Align']))
+            image_ = Image(filename)
+            image_._restrictSize(3 * inch, 3 * inch)
+            Story.append(image_)
 
-        ### TODO: Add structure
-        Story.append(Paragraph('Structure stuff goes here!', styles['Heading3']))
+        if PDB2 is not None:
+            Story.append(Paragraph('<u>{}</u>'.format(protein2_name), styles['Align']))
+            Story.append(Spacer(1, 5))
+            filename = join_subdir('{}_{}.png'.format(PDB2, n), subdir)
+            pdb_seq2 = make_structure_map(pair.seq2, pair.peptide2.position, PDB2, filename)
+            Story.append(Paragraph('Peptide seq: {}'.format(pair.seq2), styles['Align']))
+            Story.append(Paragraph('PDB str seq: {}'.format(pdb_seq2), styles['Align']))
+            image_ = Image(filename)
+            image_._restrictSize(3 * inch, 3 * inch)
+            Story.append(image_)
 
         Story.append(NextPageTemplate('HeatmapPage'))
         Story.append(PageBreak())
@@ -170,8 +193,8 @@ def build_report(protein1_name, protein2_name,
                         for alignment_name, description in protein_homologs.items():
                             if line_id in alignment_name:
                                 alignment_names_dict_list.append((line_id.split('|')[0], description))
-                        if len(line_id) > 35 - len(line.seq):
-                            line_id = line_id[:35-len(line.seq)]
+                        if len(line_id) > 32 - len(line.seq):
+                            line_id = line_id[:32-len(line.seq)]
                     Story.append(Paragraph('{} {}'.format(line.seq, line_id), styles['Align']))
             Story.append(FrameBreak())
         # Add the heatmap
@@ -220,7 +243,7 @@ def build_report(protein1_name, protein2_name,
 
 
 def build_frames_peptidepage(doc, peptides_height):
-    frame_height = 12*(peptides_height+2) + 12
+    frame_height = 16*(peptides_height+6) + 12
     title_frame = Frame(doc.leftMargin, doc.height, doc.width, 1.1*inch)
     peptide_frame_1 = Frame(
                         doc.leftMargin,
@@ -234,16 +257,35 @@ def build_frames_peptidepage(doc, peptides_height):
                         doc.width/2,
                         frame_height
                         )
-    structure_frame = Frame(
+    structure_frame_1 = Frame(
+                        doc.leftMargin,
+                        doc.bottomMargin + 2.3*inch,
+                        doc.width/2,
+                        2.3*inch
+                        )
+    structure_frame_2 = Frame(
+                        doc.leftMargin + doc.width/2,
+                        doc.bottomMargin + 2.3*inch,
+                        doc.width/2,
+                        2.3*inch
+                        )
+    structure_frame_3 = Frame(
                         doc.leftMargin,
                         doc.bottomMargin,
-                        doc.width,
-                        doc.height - frame_height - 1.1*inch
+                        doc.width/2,
+                        2.3*inch
                         )
-    return [title_frame, peptide_frame_1, peptide_frame_2, structure_frame]
+    structure_frame_4 = Frame(
+                        doc.leftMargin + doc.width/2,
+                        doc.bottomMargin,
+                        doc.width/2,
+                        2.3*inch
+                        )
+    return [title_frame, peptide_frame_1, peptide_frame_2,
+            structure_frame_1, structure_frame_2, structure_frame_3, structure_frame_4]
 
 def build_frames_heatmappage(doc, alignment_height):
-    frame_height = 12*(alignment_height+4) + 12
+    frame_height = 12*(alignment_height+4) + 14
     align_frame_0 = Frame(
                         doc.leftMargin,
                         doc.height - frame_height + marginsize,

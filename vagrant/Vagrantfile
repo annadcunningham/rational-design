@@ -47,6 +47,8 @@ Vagrant.configure("2") do |config|
     apt-get install -y libblas-dev liblapack-dev libatlas-base-dev gfortran # Need these for scipy
     apt-get install -y python3-pip ipython3
     pip3 install scipy biopython pandas matplotlib seaborn pillow reportlab
+    wget ftp://ftp.cmbi.ru.nl/pub/software/dssp/dssp-2.0.4-linux-amd64 -O /usr/local/bin/dssp
+    chmod a+x /usr/local/bin/dssp
     # Install the NCBI Blast database
     chmod +x /design/ncbi-proteomes/database_setup.sh
     cd /design/ncbi-proteomes/ && ./database_setup.sh

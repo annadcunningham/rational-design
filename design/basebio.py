@@ -11,8 +11,6 @@ fish = ['cavefish', 'killifish', 'zebrafish']
 insect = ['worm', 'fly', 'ant']
 yeast = ['yeast', 'candida']
 organisms = mammals + chicken + reptiles + fish + insect + yeast
-# for now - just use a few organisms
-# organisms = ['mouse', 'rat', 'chicken', 'frog', 'fly', 'yeast']
 proteome_names = ['MOUSE', 'RAT', 'CRIGR', 'CANLF', 'FELCA', 'BOVIN', 'PIG',
                  'CHICK', 'ALLMI', 'XENTR', 'PELSI', 'ASTMX', 'ORYLA', 'DANRE',
                  'CAEBE', 'DROVI', 'CERBI', 'YEAST', 'CANAL']
@@ -20,6 +18,10 @@ organism_dict = dict(zip(organisms, proteome_names))
 organism_dict2 = dict(zip(proteome_names, organisms))
 organism_dict['human'] = 'HUMAN'
 organism_dict2['HUMAN'] = 'human'
+
+# for now - use fewer organisms
+organisms = ['mouse', 'dog', 'cow', 'chicken', 'alligator',
+             'frog', 'zebrafish', 'worm', 'fly', 'yeast']
 
 ProteinBase = namedtuple('ProteinBase', ['name', 'proteinseq', 'fasta'])
 PeptideBase = namedtuple('PeptideBase', ['protein', 'peptideseq'])
