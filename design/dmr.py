@@ -122,8 +122,8 @@ def calculate_conservation_for_heatmap(fastafile, peptideseq, gap_penalty=-6, ma
     # go through each entry and add the alignment score to the dictionary
     scores_dict = {}
     for record in aln:
-        temp_alignment = pairwise2.align.globalds(peptideseq,
-                                                  str(record.seq).replace('-', 'X'),
+        temp_alignment = pairwise2.align.globalds(peptideseq[1:-1],
+                                                  str(record.seq).replace('-', 'X')[1:-1],
                                                   matrix, gap_penalty, gap_penalty)
         score = temp_alignment[0][2]
         try:
@@ -198,7 +198,7 @@ def plot_heatmap(df1, df2, figname, tempdir, num2show=30, pname1=None, pname2=No
 #if __name__ == '__main__':
     """
     NOTES:
-    - make a map showing the position? possibly with a predicted secondary structure?
+    - make a map showing the position?
     - user input for how many peptides to show?
     - sort the heatmap first by human sequence?
     - show the two peptides on top of each other in the summary table
