@@ -161,7 +161,7 @@ def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
     heatmap_df = pd.DataFrame(dictdict)
     return (heatmap_df, protein_name_dict)
 
-def plot_heatmap(df1, df2, figname, tempdir, num2show=30):
+def plot_heatmap(df1, df2, figname, tempdir, num2show=30, pname1=None, pname2=None):
     df3 = pd.concat([df1, df2], axis=1)
     # weed out repeats
     accessions = df3.columns.values.tolist()
@@ -178,6 +178,11 @@ def plot_heatmap(df1, df2, figname, tempdir, num2show=30):
     df3_sorted = df3.ix[['human'] + organisms, :]
     df3_sorted = df3_sorted.reindex_axis(df3_sorted.mean().sort_values(ascending=False).index, axis=1)
     df3_sorted[df3_sorted < 0] = 0
+    if pname1 is not None and pname2 is not None:
+        df3_columns = df3.columns.values.tolist()
+        df3_new_columns = [pname1, pname2]
+        df3_new_columns.extend([acc for acc in df3_columns if acc not in df3_new_columns])
+        df3_sorted = df3_sorted.ix[:, df3_new_columns]
     df3_sorted = df3_sorted.ix[:, :num2show]
     # make the figure
     fig = plt.figure(figsize=(11,5))
@@ -194,6 +199,9 @@ def plot_heatmap(df1, df2, figname, tempdir, num2show=30):
     """
     NOTES:
     - make a map showing the position? possibly with a predicted secondary structure?
-    - user input for how many peptides to show
+    - user input for how many peptides to show?
     - sort the heatmap first by human sequence?
+    - show the two peptides on top of each other in the summary table
+    - try reversing peptide sequence?
+    - something to calculate the heatmap for fewer peptides when the peptides are short...
     """
