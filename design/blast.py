@@ -90,7 +90,7 @@ def try_Entrez_efetch(accessionID):
         print('\t\tx')
     return handle
 
-def write_protein_fastas_from_accession_numbers(accession_list, peptide_list, accessions_to_skip=None, subdir='TEMP'):
+def write_protein_fastas_from_accession_numbers(accession_list, peptide_list, accessions_to_skip=None, subdir='TEMP', entrez=True):
     """ Uses Entrez to search for the protein sequences of a given list of
         accession numbers. Writes a fasta if a sequence is found.
         Returns a list of fasta files.
@@ -101,15 +101,16 @@ def write_protein_fastas_from_accession_numbers(accession_list, peptide_list, ac
             if accession in accessions_to_skip:
                 continue
         fasta_filename = join_subdir('{}_{}.fasta'.format(accession, peptide), subdir)
-        if not os.path.isfile(fasta_filename):
-            handle = try_Entrez_efetch(accession)
-            try:
-                fasta = handle.read()
-            except:
-                fasta = ''
-            if fasta != '':
-                with open(fasta_filename, 'w') as F:
-                    F.write(fasta)
+        if entrez:
+            if not os.path.isfile(fasta_filename):
+                handle = try_Entrez_efetch(accession)
+                try:
+                    fasta = handle.read()
+                except:
+                    fasta = ''
+                if fasta != '':
+                    with open(fasta_filename, 'w') as F:
+                        F.write(fasta)
         if os.path.isfile(fasta_filename):
             print('Entrez {} fetched'.format(accession))
             accessions_with_proteins.append(fasta_filename)

@@ -133,7 +133,7 @@ def calculate_conservation_for_heatmap(fastafile, peptideseq, gap_penalty=-6, ma
         scores_dict[organism] = score
     return scores_dict
 
-def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
+def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10, entrez=True):
     """ Calculates a heatmap of conservation of the peptide in the given list of
         proteins. Peptide is a peptide object.
         Returns a dataframe of conservation scores and a dictionary of protein
@@ -142,7 +142,7 @@ def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
     fname = blast_peptide_local(peptide.peptideseq)
     accession_list, peptide_list = get_homologous_blast_subjects(fname, peptide.peptideseq)
     print('Fetching {} proteins with homologous peptides'.format(len(accession_list)))
-    fastas = write_protein_fastas_from_accession_numbers(accession_list, peptide_list, accessions_to_skip)
+    fastas = write_protein_fastas_from_accession_numbers(accession_list, peptide_list, accessions_to_skip, entrez=entrez)
     dictdict = {}
     protein_name_dict = {}
     # calculate for protein of interest

@@ -19,7 +19,7 @@ def argument_parser():
                         help='Fasta file for protein 1.')
     parser.add_argument('fasta2', type=FileType('r'),
                         help='Fasta file for protein 2.')
-    
+
     # PEPTIDE INPUTS
     parser.add_argument('-l', '--peptidelength', type=str,
                         required=True, help=('Length of desired peptide. Input '
@@ -29,6 +29,9 @@ def argument_parser():
                         help='PDB ID of protein 1.')
     parser.add_argument('-pdb2', type=str, required=False, default=None,
                         help='PDB ID of protein 2.')
+    # ENTREZ OPTION
+    parser.add_argument('--no-entrez', action='store_false', required=False,
+                        help='Use this flag to skip Entrez fetching if all files are already fetched.')
 
     # OUTPUT SPECIFICATIONS
     parser.add_argument('-o', '--out', type=FileType('w'), required=False,
@@ -86,8 +89,8 @@ if __name__ == '__main__':
     for n in range(len(top_homologous_pairs)):
         pair = top_homologous_pairs[n]
         print('Generating heatmap for peptide {}'.format(n+1))
-        df1, protein_names_1 = calculate_heatmap(pair.peptide1)
-        df2, protein_names_2 = calculate_heatmap(pair.peptide2)
+        df1, protein_names_1 = calculate_heatmap(pair.peptide1, entrez=args.no_entrez)
+        df2, protein_names_2 = calculate_heatmap(pair.peptide2, entrez=args.no_entrez)
         heatmap_df, ordered_keys = plot_heatmap(
                 df1, df2, n, args.temp,
                 pname1=protein1_name,
