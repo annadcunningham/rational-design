@@ -19,11 +19,7 @@ def argument_parser():
                         help='Fasta file for protein 1.')
     parser.add_argument('fasta2', type=FileType('r'),
                         help='Fasta file for protein 2.')
-    parser.add_argument('-p1', '--protein1', type=str, required=False,
-                        help='Name of protein 1.')
-    parser.add_argument('-p2', '--protein2', type=str, required=False,
-                        help='Name of protein 2.')
-
+    
     # PEPTIDE INPUTS
     parser.add_argument('-l', '--peptidelength', type=str,
                         required=True, help=('Length of desired peptide. Input '
@@ -45,6 +41,10 @@ def argument_parser():
 
 if __name__ == '__main__':
     args = argument_parser()
+
+    # Parse the protein names from the fasta files
+    protein1_name = args.fasta1.name.split('/')[-1].split('.fasta')[0]
+    protein2_name = args.fasta2.name.split('/')[-1].split('.fasta')[0]
 
     # Parse the peptide_length argument
     if '-' in args.peptidelength:
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     for pair in top_homologous_pairs:
         print('{}\t{}\t{}'.format(round(pair.homology_score, 2), pair.seq1, pair.seq2))
 
-    top_homologous_pairs = top_homologous_pairs[:2]
+    # top_homologous_pairs = top_homologous_pairs[:2]
 
     # Try to get the accession numbers for the proteins so they don't repeat
     # in the heatmap
@@ -88,13 +88,15 @@ if __name__ == '__main__':
         print('Generating heatmap for peptide {}'.format(n+1))
         df1, protein_names_1 = calculate_heatmap(pair.peptide1)
         df2, protein_names_2 = calculate_heatmap(pair.peptide2)
-        heatmap_df, ordered_keys = plot_heatmap(df1, df2, n, args.temp)
+        heatmap_df, ordered_keys = plot_heatmap(
+                df1, df2, n, args.temp,
+                pname1=protein1_name,
+                pname2=protein2_name
+                )
         protein_names_1.update(protein_names_2)
         protein_names_for_report[n] = (protein_names_1, ordered_keys)
 
     # Generate the report
-    protein1_name = args.protein1 if args.protein1 else args.fasta1.name
-    protein2_name = args.protein2 if args.protein2 else args.fasta2.name
     build_report(protein1_name, protein2_name,
                  top_homologous_pairs,
                  protein_names_for_report,
