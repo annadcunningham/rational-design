@@ -122,8 +122,8 @@ def calculate_conservation_for_heatmap(fastafile, peptideseq, gap_penalty=-6, ma
     # go through each entry and add the alignment score to the dictionary
     scores_dict = {}
     for record in aln:
-        temp_alignment = pairwise2.align.globalds(peptideseq,
-                                                  str(record.seq).replace('-', 'X'),
+        temp_alignment = pairwise2.align.globalds(peptideseq[1:-1],
+                                                  str(record.seq).replace('-', 'X')[1:-1],
                                                   matrix, gap_penalty, gap_penalty)
         score = temp_alignment[0][2]
         try:
@@ -133,7 +133,7 @@ def calculate_conservation_for_heatmap(fastafile, peptideseq, gap_penalty=-6, ma
         scores_dict[organism] = score
     return scores_dict
 
-def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
+def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10, entrez=True):
     """ Calculates a heatmap of conservation of the peptide in the given list of
         proteins. Peptide is a peptide object.
         Returns a dataframe of conservation scores and a dictionary of protein
@@ -142,7 +142,7 @@ def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
     fname = blast_peptide_local(peptide.peptideseq)
     accession_list, peptide_list = get_homologous_blast_subjects(fname, peptide.peptideseq)
     print('Fetching {} proteins with homologous peptides'.format(len(accession_list)))
-    fastas = write_protein_fastas_from_accession_numbers(accession_list, peptide_list, accessions_to_skip)
+    fastas = write_protein_fastas_from_accession_numbers(accession_list, peptide_list, accessions_to_skip, entrez=entrez)
     dictdict = {}
     protein_name_dict = {}
     # calculate for protein of interest
@@ -161,7 +161,7 @@ def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10):
     heatmap_df = pd.DataFrame(dictdict)
     return (heatmap_df, protein_name_dict)
 
-def plot_heatmap(df1, df2, figname, tempdir, num2show=30):
+def plot_heatmap(df1, df2, figname, tempdir, num2show=30, pname1=None, pname2=None):
     df3 = pd.concat([df1, df2], axis=1)
     # weed out repeats
     accessions = df3.columns.values.tolist()
@@ -178,6 +178,11 @@ def plot_heatmap(df1, df2, figname, tempdir, num2show=30):
     df3_sorted = df3.ix[['human'] + organisms, :]
     df3_sorted = df3_sorted.reindex_axis(df3_sorted.mean().sort_values(ascending=False).index, axis=1)
     df3_sorted[df3_sorted < 0] = 0
+    if pname1 is not None and pname2 is not None:
+        df3_columns = df3.columns.values.tolist()
+        df3_new_columns = [pname1, pname2]
+        df3_new_columns.extend([acc for acc in df3_columns if acc not in df3_new_columns])
+        df3_sorted = df3_sorted.ix[:, df3_new_columns]
     df3_sorted = df3_sorted.ix[:, :num2show]
     # make the figure
     fig = plt.figure(figsize=(11,5))
@@ -193,7 +198,10 @@ def plot_heatmap(df1, df2, figname, tempdir, num2show=30):
 #if __name__ == '__main__':
     """
     NOTES:
-    - make a map showing the position? possibly with a predicted secondary structure?
-    - user input for how many peptides to show
+    - make a map showing the position?
+    - user input for how many peptides to show?
     - sort the heatmap first by human sequence?
+    - show the two peptides on top of each other in the summary table
+    - try reversing peptide sequence?
+    - something to calculate the heatmap for fewer peptides when the peptides are short...
     """

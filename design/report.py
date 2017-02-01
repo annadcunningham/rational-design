@@ -6,7 +6,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 
 from peptides import Peptide, Protein, HomologousPeptidePair
-from pdb import make_structure_map
+from structure import make_structure_map
 from basebio import join_subdir
 
 styles = getSampleStyleSheet()
