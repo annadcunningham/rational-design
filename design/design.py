@@ -23,9 +23,9 @@ def argument_parser():
     parser.add_argument('-p2', type=str, nargs=2, required=False, default=None,
                         help='Protein name and Uniprot accession number for protein 2.')
     # 2. Fasta files downloaded from uniprot
-    parser.add_argument('--fasta1', type=FileType('r'), required=False, default=None,
+    parser.add_argument('-fasta1', type=FileType('r'), required=False, default=None,
                         help='Fasta file for protein 1 (please download from Uniprot).')
-    parser.add_argument('--fasta2', type=FileType('r'), required=False, default=None,
+    parser.add_argument('-fasta2', type=FileType('r'), required=False, default=None,
                         help='Fasta file for protein 2 (please download from Uniprot).')
 
     # PEPTIDE INPUTS

@@ -12,7 +12,7 @@ for the specified number of candidate peptides.
 
 #### Usage:
 ```
-$ python3 design.py --fasta1 protein1.fasta --fasta2 protein2.fasta -l peptide_length -o name_of_output_report.pdf
+$ python3 design.py -fasta1 protein1.fasta -fasta2 protein2.fasta -l peptide_length -o name_of_output_report.pdf
 ```
 OR
 ```
@@ -20,11 +20,15 @@ $ python3 design.py -p1 protein1_name protein1_accession -p2 protein2_name prote
 ```
 For example:
 ```
-$ python3 design.py --fasta1 test/pdk.fasta --fasta2 test/dpkc.fasta -l 5 -o pdk_dpkc_report.pdf
+$ python3 design.py -fasta1 test/pdk.fasta -fasta2 test/dpkc.fasta -l 5 -o pdk_dpkc_report.pdf
 ```
 OR
 ```
 $ python3 design.py -p1 PDK Q15118 -p2 DPKC Q05655 -l 5-9 -o pdk_dpkc_report.pdf
+```
+If you have a PDB ID for one or both proteins, you can add them with the flags `-pdb1` or `-pdb2`
+```
+$ python3 design.py -p1 Drp1 O00429 -p2 Mff Q9GZY8 -l 5-10 -o drp1_mff.pdf -pdb1 4BEJ
 ```
 
 ## General Workflow
