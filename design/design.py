@@ -109,7 +109,8 @@ if __name__ == '__main__':
     for pair in top_homologous_pairs:
         print('{}\t{}\t{}'.format(round(pair.homology_score, 2), pair.seq1, pair.seq2))
 
-    #top_homologous_pairs = top_homologous_pairs[:2]
+    # for testing purposes
+    # top_homologous_pairs = top_homologous_pairs[:2]
 
     ## 3. Generate a heatmap for each candidate
     #  Try to get the accession numbers for the proteins so they don't repeat in the heatmap
@@ -152,6 +153,5 @@ if __name__ == '__main__':
     """
     NOTES:
     - make a linear map showing the position of each peptide?
-    - show the two peptides on top of each other in the summary table
     - try reversing peptide sequence during initial alignment
     """

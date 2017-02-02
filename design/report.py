@@ -1,5 +1,4 @@
 import pandas as pd
-from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Frame, Image, Table, PageBreak, FrameBreak, PageTemplate, NextPageTemplate
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -11,6 +10,7 @@ from basebio import join_subdir
 
 styles = getSampleStyleSheet()
 styles.add(ParagraphStyle(name='Align', fontName='Courier', fontSize=8))
+styles.add(ParagraphStyle(name='PeptideTitle', fontName='Courier', fontSize=18, alignment=1))
 marginsize = 0.6*inch
 
 def format_table(table, rows=[0], bold=True, style='Normal'):
@@ -35,6 +35,20 @@ def parse_top_homologous_pairs_for_report(protein1_name, protein2_name, list_of_
         row = [str(round(pair.homology_score, 2)),
                p1.peptideseq, p1.position, str(round(pair.conservationscore1, 2)),
                p2.peptideseq, p2.position, str(round(pair.conservationscore2, 2))]
+        table.append(row)
+    return table
+
+def parse_top_homologous_pairs_for_report_stacked(protein1_name, protein2_name, list_of_HomologousPeptidePairs):
+    table = []
+    table_header = ['Homology Score', 'Protein', 'Sequence', 'Position', 'Conservation']
+    table.append(table_header)
+    for pair in list_of_HomologousPeptidePairs:
+        p1, p2 = pair.peptide1, pair.peptide2
+        row = ['{}<br/>  '.format(round(pair.homology_score, 2)),
+               '{}<br/>{}'.format(protein1_name, protein2_name),
+               '{}<br/>{}'.format(p1.peptideseq, p2.peptideseq),
+               '{}<br/>{}'.format(p1.position, p2.position),
+               '{}<br/>{}'.format(round(pair.conservationscore1, 2), round(pair.conservationscore2, 2))]
         table.append(row)
     return table
 
@@ -103,10 +117,12 @@ def build_report(protein1_name, protein2_name,
     Story.append(Paragraph('Summary of candidate peptides', styles['Heading3']))
     Story.append(Spacer(1, 12))
 
-    table_ = parse_top_homologous_pairs_for_report(protein1_name, protein2_name,
+    table_ = parse_top_homologous_pairs_for_report_stacked(protein1_name, protein2_name,
                                                    list_of_HomologousPeptidePairs)
-    table_ = format_table(table_, rows=[0,1], style='Align')
-    table_ = format_table(table_, rows=range(2, len(table_)), bold=False, style='Align')
+    table_ = format_table(table_, rows=[0], style='Align')
+    table_ = format_table(table_, rows=range(1, len(table_)), bold=False, style='Align')
+    #table_ = format_table(table_, rows=[0,1], style='Align')
+    #table_ = format_table(table_, rows=range(2, len(table_)), bold=False, style='Align')
     Story.append(Table(table_, hAlign='LEFT'))
 
     for n in range(len(list_of_HomologousPeptidePairs)):
@@ -116,8 +132,8 @@ def build_report(protein1_name, protein2_name,
         pair = list_of_HomologousPeptidePairs[n]
 
         # Put a title on the page
-        title = 'Peptide {}: {} / {}'.format(n+1, pair.seq1, pair.seq2)
-        Story.append(Paragraph(title, styles['Title']))
+        Story.append(Paragraph(pair.seq1, styles['PeptideTitle']))
+        Story.append(Paragraph(pair.seq2, styles['PeptideTitle']))
         Story.append(Spacer(1, 10))
         Story.append(Paragraph('Similar peptides:', styles['Heading3']))
         Story.append(FrameBreak())
