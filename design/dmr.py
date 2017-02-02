@@ -133,7 +133,7 @@ def calculate_conservation_for_heatmap(fastafile, peptideseq, gap_penalty=-6, ma
         scores_dict[organism] = score
     return scores_dict
 
-def calculate_heatmap(peptide, accessions_to_skip=None, axis=None, num2show=10, entrez=True):
+def calculate_heatmap(peptide, accessions_to_skip=[], axis=None, num2show=10, entrez=True):
     """ Calculates a heatmap of conservation of the peptide in the given list of
         proteins. Peptide is a peptide object.
         Returns a dataframe of conservation scores and a dictionary of protein
@@ -195,7 +195,7 @@ def plot_heatmap(df1, df2, figname, tempdir, num2show=30, pname1=None, pname2=No
     return df3_sorted, df3_sorted.columns.values.tolist()[:num2show]
 
 
-#if __name__ == '__main__':
+if __name__ == '__main__':
     """
     NOTES:
     - make a map showing the position?

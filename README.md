@@ -5,17 +5,25 @@ This program (`design.py`) generates a list of candidate peptide
 sequences for inhibition of a desired protein-protein interaction, using the
 rational design method developed in the Mochly-Rosen lab.
 
-Inputs: Two .fasta protein sequence files from UniProt.
+Inputs: Two protein names and their Uniprot accession IDs OR Two .fasta protein sequence files from UniProt.
 Output: A .pdf report containing homology, alignment, and heatmap information
 for the specified number of candidate peptides.
 
 ####Usage:
 ```
-$ python3 design.py -p1 name_of_protein_1 -p2 name_of_protein_2 -l peptide_length -o name_of_output_report.pdf protein1.fasta protein2.fasta
+$ python3 design.py --fasta1 protein1.fasta --fasta2 protein2.fasta -l peptide_length -o name_of_output_report.pdf
+```
+OR
+```
+$ python3 design.py -p1 protein1_name protein1_accession -p2 protein2_name protein2_accession -l peptide_length -o name_of_output_report.pdf protein1.fasta protein2.fasta
 ```
 For example:
 ```
-$ python3 design.py -p1 PDK -p2 DPKC -l 5 -o pdk_dpkc_report.pdf test/pdk.fasta test/dpkc.fasta
+$ python3 design.py --fasta1 test/pdk.fasta --fasta2 test/dpkc.fasta -l 5 -o pdk_dpkc_report.pdf
+```
+OR
+```
+$ python3 design.py -p1 PDK Q15118 -p2 DPKC Q05655 -l 5-9 -o pdk_dpkc_report.pdf
 ```
 
 ## General Workflow
