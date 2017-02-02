@@ -193,15 +193,3 @@ def plot_heatmap(df1, df2, figname, tempdir, num2show=30, pname1=None, pname2=No
     print('Saving heatmap image {}.png'.format(figname))
     plt.savefig(join_subdir('{}.png'.format(figname), tempdir))
     return df3_sorted, df3_sorted.columns.values.tolist()[:num2show]
-
-
-if __name__ == '__main__':
-    """
-    NOTES:
-    - make a map showing the position?
-    - user input for how many peptides to show?
-    - sort the heatmap first by human sequence?
-    - show the two peptides on top of each other in the summary table
-    - try reversing peptide sequence?
-    - something to calculate the heatmap for fewer peptides when the peptides are short...
-    """

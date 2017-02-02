@@ -148,3 +148,10 @@ if __name__ == '__main__':
                  PDB1=args.pdb1, PDB2=args.pdb2,
                  out=args.out.name,
                  subdir=args.temp)
+
+    """
+    NOTES:
+    - make a linear map showing the position of each peptide?
+    - show the two peptides on top of each other in the summary table
+    - try reversing peptide sequence during initial alignment
+    """
