@@ -6,10 +6,11 @@ sequences for inhibition of a desired protein-protein interaction, using the
 rational design method developed in the Mochly-Rosen lab.
 
 Inputs: Two protein names and their Uniprot accession IDs OR Two .fasta protein sequence files from UniProt.
+
 Output: A .pdf report containing homology, alignment, and heatmap information
 for the specified number of candidate peptides.
 
-####Usage:
+#### Usage:
 ```
 $ python3 design.py --fasta1 protein1.fasta --fasta2 protein2.fasta -l peptide_length -o name_of_output_report.pdf
 ```
@@ -44,11 +45,9 @@ $ python3 design.py -p1 PDK Q15118 -p2 DPKC Q05655 -l 5-9 -o pdk_dpkc_report.pdf
         the list of organisms
     - Make a heatmap showing the 10 proteins with the most conserved
         homologous peptide
-4. TODO: Find where the peptides are on the protein (linear map)
-    - TODO: Show this summary on the first page of the report
-    - TODO: Show it on each individual peptide page
-    - TODO: Also calculate and show secondary structure?
-    - TODO: Show a .pdb structure if available?
+4. Optional: Structural information from input PDB ID
+    - Calculate and display relative accessible surface area
+    - Display secondary structure
 5. The report includes:
     - Summary Page
         - Table of peptides
@@ -57,9 +56,10 @@ $ python3 design.py -p1 PDK Q15118 -p2 DPKC Q05655 -l 5-9 -o pdk_dpkc_report.pdf
             - Peptide position
             - Peptide conservation
     - Peptide pages
+        - Summary of similar (shorter) candidate peptides
+        - Structural information, if PDB ID provided
         - Alignment of each peptide
         - Heatmap
-        - TODO: Structural location
         - Table of protein descriptions
 
 ## Installation
@@ -74,6 +74,7 @@ To start the VM, you will need Vagrant and VirtualBox.
 
 3. Clone this repository and initialize the VM:
 ```
+$ git clone https://github.com/annadcunningham/rational-design.git
 $ cd rational-design/vagrant
 $ vagrant up
 ```
