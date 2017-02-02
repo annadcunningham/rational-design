@@ -5,6 +5,8 @@
 *.psd
 *.psi
 *.psq
+*.fasta
+*.pdf
 design/TEMP/*
 design/PDB/*
 .vagrant/

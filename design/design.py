@@ -6,6 +6,7 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 from basebio import join_subdir, organisms
+from blast import try_Entrez_efetch, write_efetch_fasta
 from dmr import find_homologous_peptides, concatenate_homologous_peptides, calculate_heatmap, plot_heatmap
 from report import build_report
 
@@ -15,10 +16,17 @@ def argument_parser():
     parser = ArgumentParser()
 
     # PROTEIN INPUTS
-    parser.add_argument('fasta1', type=FileType('r'),
-                        help='Fasta file for protein 1.')
-    parser.add_argument('fasta2', type=FileType('r'),
-                        help='Fasta file for protein 2.')
+    # User can either input:
+    # 1. Protein names and accession numbers from Uniprot
+    parser.add_argument('-p1', type=str, nargs=2, required=False, default=None,
+                        help='Protein name and Uniprot accession number for protein 1.')
+    parser.add_argument('-p2', type=str, nargs=2, required=False, default=None,
+                        help='Protein name and Uniprot accession number for protein 2.')
+    # 2. Fasta files downloaded from uniprot
+    parser.add_argument('-fasta1', type=FileType('r'), required=False, default=None,
+                        help='Fasta file for protein 1 (please download from Uniprot).')
+    parser.add_argument('-fasta2', type=FileType('r'), required=False, default=None,
+                        help='Fasta file for protein 2 (please download from Uniprot).')
 
     # PEPTIDE INPUTS
     parser.add_argument('-l', '--peptidelength', type=str,
@@ -45,22 +53,50 @@ def argument_parser():
 if __name__ == '__main__':
     args = argument_parser()
 
-    # Parse the protein names from the fasta files
-    protein1_name = args.fasta1.name.split('/')[-1].split('.fasta')[0]
-    protein2_name = args.fasta2.name.split('/')[-1].split('.fasta')[0]
+    ## 1. Get the protein names and fasta files
+    fasta1, fasta2 = None, None
+    protein1_name, protein2_name = None, None
+    accession1, accession2 = None, None
+    #  If protein names and accessions are specified:
+    if args.p1 is not None:
+        protein1_name = args.p1[0]
+        accession1 = args.p1[1]
+        fasta1 = write_efetch_fasta(
+                    try_Entrez_efetch(accession1),
+                    '{}.fasta'.format(protein1_name)
+                    )
+    if args.p2 is not None:
+        protein2_name = args.p2[0]
+        accession2 = args.p2[1]
+        fasta2 = write_efetch_fasta(
+                    try_Entrez_efetch(accession2),
+                    '{}.fasta'.format(protein2_name)
+                    )
+    #  If fasta files are specified:
+    if args.fasta1 is not None:
+        fasta1 = args.fasta1.name
+        protein1_name = fasta1.split('/')[-1].split('.fasta')[0]
+    if args.fasta2 is not None:
+        fasta2 = args.fasta2.name
+        protein2_name = fasta2.split('/')[-1].split('.fasta')[0]
+    #  Check that proteins and fastas are defined
+    assert fasta1 != None, 'Error: No fasta file for protein 1'
+    assert fasta2 != None, 'Error: No fasta file for protein 2'
+    assert protein1_name != None, 'Error: No name for protein 1'
+    assert protein2_name != None, 'Error: No name for protein 1'
 
-    # Parse the peptide_length argument
+    ## 2. Parse the peptide_length argument
     if '-' in args.peptidelength:
         length1, length2 = [int(n) for n in args.peptidelength.split('-')]
         peptide_lengths = range(length2, length1-1, -1)
     else:
         peptide_lengths = [int(args.peptidelength)]
 
-    # Generate a list of homologous peptide pair candidates
+    ## 3. Generate a list of homologous peptide pair candidates
     list_of_top_homologous_pairs_lists = []
     for peptide_length in peptide_lengths:
-        top_homologous_pairs = find_homologous_peptides(args.fasta1.name,
-                                                        args.fasta2.name,
+        top_homologous_pairs = find_homologous_peptides(fasta1,
+                                                        fasta2,
                                                         peptide_length,
                                                         filter_by_cons=False)
         list_of_top_homologous_pairs_lists.append(top_homologous_pairs)
@@ -73,18 +109,24 @@ if __name__ == '__main__':
     for pair in top_homologous_pairs:
         print('{}\t{}\t{}'.format(round(pair.homology_score, 2), pair.seq1, pair.seq2))
 
+    # for testing purposes
     # top_homologous_pairs = top_homologous_pairs[:2]
 
-    # Try to get the accession numbers for the proteins so they don't repeat
-    # in the heatmap
-    try:
-        accession1 = top_homologous_pairs[0].peptide1.name.split('-')[1]
-        accession2 = top_homologous_pairs[0].peptide2.name.split('-')[1]
-        accessions_to_skip = [accession1, accession2]
-    except:
-        accessions_to_skip = None
+    ## 3. Generate a heatmap for each candidate
+    #  Try to get the accession numbers for the proteins so they don't repeat in the heatmap
+    if accession1 is None:
+        try:
+            accession1 = top_homologous_pairs[0].peptide1.name.split('-')[1]
+        except:
+            pass
+    if accession2 is None:
+        try:
+            accession2 = top_homologous_pairs[0].peptide2.name.split('-')[1]
+        except:
+            pass
+    accessions_to_skip = [A for A in [accession1, accession2] if A is not None]
 
-    # Generate a heatmap for each candidate
+    #  Make the heatmap
     protein_names_for_report = {}
     for n in range(len(top_homologous_pairs)):
         pair = top_homologous_pairs[n]
@@ -99,7 +141,7 @@ if __name__ == '__main__':
         protein_names_1.update(protein_names_2)
         protein_names_for_report[n] = (protein_names_1, ordered_keys)
 
-    # Generate the report
+    ## 4. Generate the report
     build_report(protein1_name, protein2_name,
                  top_homologous_pairs,
                  protein_names_for_report,
@@ -107,3 +149,9 @@ if __name__ == '__main__':
                  PDB1=args.pdb1, PDB2=args.pdb2,
                  out=args.out.name,
                  subdir=args.temp)
+
+    """
+    NOTES:
+    - make a linear map showing the position of each peptide?
+    - try reversing peptide sequence during initial alignment
+    """
