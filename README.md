@@ -16,7 +16,6 @@ You can input protein names and their Uniprot accessions:
 $ python3 design.py -p1 protein1_name protein1_accession -p2 protein2_name protein2_accession -l peptide_length -o name_of_output_report.pdf
 # for example:
 $ python3 design.py -p1 PDK Q15118 -p2 DPKC Q05655 -l 5 -o pdk_dpkc_report.pdf
-
 ```
 
 Or, you can input two protein .fasta files:
@@ -78,36 +77,35 @@ To start the VM, you will need Vagrant and VirtualBox.
 2. Download and install VirtualBox here: https://www.virtualbox.org/wiki/Downloads
 
 3. Download this repository (`Releases > v1.0 > Download Source code (zip)`) or clone it:
-
-```
-$ git clone https://github.com/annadcunningham/rational-design.git
-```
-In your Terminal, initialize the VM. This may take a while (10-20 minutes)
-```
-$ cd rational-design/vagrant
-$ vagrant up
-```
+  ```
+  $ git clone https://github.com/annadcunningham/rational-design.git
+  ```
+In your Terminal, initialize the VM. This may take a while (10-20 minutes).
+  ```
+  $ cd rational-design/vagrant
+  $ vagrant up
+  ```
 
 4. Enter the VM and navigate to the `design` directory:
-```
-$ vagrant ssh
-$ cd /design/
-```
+  ```
+  $ vagrant ssh
+  $ cd /design/
+  ```
 If you are using .fasta input files, you should save them somewhere in this `design` directory so
 you can access them within the VM.
 
 5. Now you can run your proteins of interest (see Usage section above).
 
 6. When you're all done, exit the VM:
-```
-$ exit
-```
+  ```
+  $ exit
+  ```
 You can always re-enter it using `vagrant ssh` (always do these commands from the `rational-design/vagrant` directory).
 You can leave the VM running; it will take up 2GB of RAM. Or you can delete it:
-```
-$ vagrant destroy
-```
+  ```
+  $ vagrant destroy
+  ```
 To check whether you have the VM running:
-```
-$ vagrant status
-```
+  ```
+  $ vagrant status
+  ```
