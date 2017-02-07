@@ -6,10 +6,10 @@ from matplotlib import pyplot as plt
 from Bio import SeqIO, pairwise2
 from Bio.SubsMat import MatrixInfo
 
-from basebio import organisms, organism_dict2, PeptideBase, ProteinBase, PairwiseAlignment, join_subdir
-from peptides import Peptide, Protein, HomologousPeptidePair
-from alignments import keep_top_n_alignments, keep_top_std_alignments
-from blast import blast_peptide_local, get_homologous_blast_subjects, write_protein_fastas_from_accession_numbers
+from rational_design.basebio import organisms, organism_dict2, PeptideBase, ProteinBase, PairwiseAlignment, join_subdir
+from rational_design.peptides import Peptide, Protein, HomologousPeptidePair
+from rational_design.alignments import keep_top_n_alignments, keep_top_std_alignments
+from rational_design.blast import blast_peptide_local, get_homologous_blast_subjects, write_protein_fastas_from_accession_numbers
 
 def get_protein_name_and_seq(fastafile):
     """ Parses a fasta file (containing a single entry) into a Protein namedtuple """

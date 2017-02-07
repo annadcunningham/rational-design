@@ -4,9 +4,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Frame, Imag
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 
-from peptides import Peptide, Protein, HomologousPeptidePair
-from structure import make_structure_map
-from basebio import join_subdir
+from rational_design.peptides import Peptide, Protein, HomologousPeptidePair
+from rational_design.structure import make_structure_map
+from rational_design.basebio import join_subdir
 
 styles = getSampleStyleSheet()
 styles.add(ParagraphStyle(name='Align', fontName='Courier', fontSize=8))

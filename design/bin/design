@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """ Command line tool for rational peptide design. """
 
 from argparse import ArgumentParser, FileType
@@ -5,10 +7,10 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
-from basebio import join_subdir, organisms
-from blast import try_Entrez_efetch, write_efetch_fasta
-from dmr import find_homologous_peptides, concatenate_homologous_peptides, calculate_heatmap, plot_heatmap
-from report import build_report
+from rational_design.basebio import join_subdir, organisms
+from rational_design.blast import try_Entrez_efetch, write_efetch_fasta
+from rational_design.dmr import find_homologous_peptides, concatenate_homologous_peptides, calculate_heatmap, plot_heatmap
+from rational_design.report import build_report
 
 
 def argument_parser():
@@ -110,7 +112,7 @@ if __name__ == '__main__':
         print('{}\t{}\t{}'.format(round(pair.homology_score, 2), pair.seq1, pair.seq2))
 
     # for testing purposes
-    # top_homologous_pairs = top_homologous_pairs[:2]
+    # top_homologous_pairs = top_homologous_pairs[:5]
 
     ## 3. Generate a heatmap for each candidate
     #  Try to get the accession numbers for the proteins so they don't repeat in the heatmap
@@ -150,8 +152,8 @@ if __name__ == '__main__':
                  out=args.out.name,
                  subdir=args.temp)
 
-    """
-    NOTES:
-    - make a linear map showing the position of each peptide?
-    - try reversing peptide sequence during initial alignment
-    """
+"""
+NOTES:
+- make a linear map showing the position of each peptide?
+- try reversing peptide sequence during initial alignment
+"""

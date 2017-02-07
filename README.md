@@ -1,7 +1,7 @@
 # Rational Design
 For DMR lab.
 
-This program (`design.py`) generates a list of candidate peptide
+This program (`design`) generates a list of candidate peptide
 sequences for inhibition of a desired protein-protein interaction, using the
 rational design method developed in the Mochly-Rosen lab.
 
@@ -13,22 +13,22 @@ for the specified number of candidate peptides.
 #### Usage:
 You can input protein names and their Uniprot accessions:
 ```
-$ python3 design.py -p1 protein1_name protein1_accession -p2 protein2_name protein2_accession -l peptide_length -o name_of_output_report.pdf
+$ design -p1 protein1_name protein1_accession -p2 protein2_name protein2_accession -l peptide_length -o name_of_output_report.pdf
 # for example:
-$ python3 design.py -p1 PDK Q15118 -p2 DPKC Q05655 -l 5 -o pdk_dpkc_report.pdf
+$ design -p1 PDK Q15118 -p2 DPKC Q05655 -l 5 -o pdk_dpkc_report.pdf
 ```
 
 Or, you can input two protein .fasta files:
 ```
-$ python3 design.py -fasta1 protein1.fasta -fasta2 protein2.fasta -l peptide_length -o name_of_output_report.pdf
+$ design -fasta1 protein1.fasta -fasta2 protein2.fasta -l peptide_length -o name_of_output_report.pdf
 # for example:
-$ python3 design.py -fasta1 test/pdk.fasta -fasta2 test/dpkc.fasta -l 5 -o pdk_dpkc_report.pdf
+$ design -fasta1 test/pdk.fasta -fasta2 test/dpkc.fasta -l 5 -o pdk_dpkc_report.pdf
 ```
 
 You can specify a range of peptide lengths, for example `-l 5-10`.
 If you have a PDB ID for one or both proteins, you can add them with the flags `-pdb1` or `-pdb2`
 ```
-$ python3 design.py -p1 Drp1 O00429 -p2 Mff Q9GZY8 -l 5-10 -o drp1_mff.pdf -pdb1 4BEJ
+$ design -p1 Drp1 O00429 -p2 Mff Q9GZY8 -l 5-10 -o drp1_mff.pdf -pdb1 4BEJ
 ```
 
 ## General Workflow

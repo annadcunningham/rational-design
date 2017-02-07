@@ -52,5 +52,7 @@ Vagrant.configure("2") do |config|
     # Install the NCBI Blast database
     chmod +x /design/ncbi-proteomes/database_setup.sh
     cd /design/ncbi-proteomes/ && ./database_setup.sh
+    # Install the rational_design package
+    cd /design/ && python3 setup.py install
   SHELL
 end

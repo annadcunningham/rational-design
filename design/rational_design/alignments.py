@@ -7,7 +7,7 @@ from itertools import combinations
 from Bio.Align.Applications import ClustalwCommandline
 from Bio.SubsMat import MatrixInfo
 
-from basebio import organism_dict, organism_dict2, PairwiseAlignment, PeptideBase, ProteinBase
+from rational_design.basebio import organism_dict, organism_dict2, PairwiseAlignment, PeptideBase, ProteinBase
 
 
 class MultipleSequenceAlignment():

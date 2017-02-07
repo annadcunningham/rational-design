@@ -4,9 +4,9 @@ import os.path
 import re
 from Bio import AlignIO, SeqRecord, Seq, Align
 
-from blast import blast_protein_local, get_top_blast_subject
-from alignments import MultipleSequenceAlignment, clustal_MSA_local, get_human_seq_from_alignment
-from basebio import organisms, PeptideBase, ProteinBase, join_subdir
+from rational_design.blast import blast_protein_local, get_top_blast_subject
+from rational_design.alignments import MultipleSequenceAlignment, clustal_MSA_local, get_human_seq_from_alignment
+from rational_design.basebio import organisms, PeptideBase, ProteinBase, join_subdir
 
 
 class Protein():

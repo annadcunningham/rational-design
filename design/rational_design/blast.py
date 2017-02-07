@@ -6,7 +6,7 @@ from Bio import Entrez
 from Bio.Blast import NCBIXML
 from Bio.Blast.Applications import NcbiblastxCommandline, NcbiblastpCommandline
 
-from basebio import join_subdir, ndiff
+from rational_design.basebio import join_subdir, ndiff
 
 Entrez.email = 'annadcunningham@gmail.com'
 ncbi_dbpath = 'ncbi-proteomes/'
