@@ -151,7 +151,7 @@ def calculate_heatmap(peptide, accessions_to_skip=[], axis=None, num2show=10, en
     dictdict[accession_label] = scores_dict
     # calculate for other homologous proteins
     print('Assembling heatmap for homologous peptides in {} proteins'.format(len(fastas)))
-    for fasta in fastas[:5]:
+    for fasta in fastas:
         print('Calculating conservation for {}'.format(fasta))
         fname = fasta.split('/')[-1].split('.fasta')[0]
         accession_label, peptide_seq = fname.split('_')

@@ -112,7 +112,7 @@ if __name__ == '__main__':
         print('{}\t{}\t{}'.format(round(pair.homology_score, 2), pair.seq1, pair.seq2))
 
     # for testing purposes
-    top_homologous_pairs = top_homologous_pairs[:5]
+    # top_homologous_pairs = top_homologous_pairs[:5]
 
     ## 3. Generate a heatmap for each candidate
     #  Try to get the accession numbers for the proteins so they don't repeat in the heatmap
