@@ -10,3 +10,6 @@
 design/TEMP/*
 design/PDB/*
 .vagrant/
+design/*.egg-info/*
+design/build/*
+design/dist/*
